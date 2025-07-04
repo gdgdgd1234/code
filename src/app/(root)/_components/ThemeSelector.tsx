@@ -76,14 +76,20 @@ function ThemeSelector() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 mt-2 w-full min-w-[280px] glass rounded-2xl shadow-2xl py-3 z-50 border border-white/20"
+            className="absolute top-full left-0 mt-2 w-full min-w-[320px] glass rounded-2xl shadow-2xl py-3 z-[9999] border border-white/20"
+            style={{ 
+              position: 'absolute',
+              zIndex: 9999,
+              maxHeight: '400px',
+              overflowY: 'auto'
+            }}
           >
             <div className="px-4 pb-3 mb-3 border-b border-white/10">
               <p className="text-sm font-semibold text-gray-300">Select Theme</p>
               <p className="text-xs text-gray-500 mt-1">Choose your preferred editor theme</p>
             </div>
 
-            <div className="max-h-[300px] overflow-y-auto px-2">
+            <div className="px-2 space-y-1">
               {THEMES.map((t, index) => (
                 <motion.button
                   key={t.id}
@@ -91,7 +97,7 @@ function ThemeSelector() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className={`
-                    relative group w-full flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200 mb-1
+                    relative group w-full flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200
                     ${theme === t.id 
                       ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" 
                       : "text-gray-300 hover:bg-white/10"

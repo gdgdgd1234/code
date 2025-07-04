@@ -3,8 +3,8 @@
 import { useCodeEditorStore } from '@/store/useCodeEditorStore'
 import React, { useEffect, useRef, useState } from 'react'
 import { THEMES } from '../_constants';
-import {AnimatePresence, motion} from 'framer-motion'
-import { CircleOff, Cloud, Github, Laptop, Moon, Palette, Sun } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion'
+import { CircleOff, Cloud, Github, Laptop, Moon, Palette, Sun, ChevronDown } from 'lucide-react';
 
 const THEME_ICONS: Record<string, React.ReactNode> = {
   "vs-dark": <Moon className="size-4" />,
@@ -17,7 +17,7 @@ const THEME_ICONS: Record<string, React.ReactNode> = {
 function ThemeSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const {theme, setTheme} = useCodeEditorStore();
+  const { theme, setTheme } = useCodeEditorStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const currentTheme = THEMES.find((t) => t.id === theme);
 
@@ -35,6 +35,7 @@ function ThemeSelector() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
   if (!mounted) return null;
 
   return (
@@ -43,23 +44,29 @@ function ThemeSelector() {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-48 group relative flex items-center gap-2 px-4 py-2.5 bg-[#1e1e2e]/80 hover:bg-[#262637] 
-        rounded-lg transition-all duration-200 border border-gray-800/50 hover:border-gray-700"
+        className="group relative flex items-center gap-3 px-4 py-2.5 glass-dark hover:bg-white/10 rounded-xl transition-all duration-300 min-w-[180px]"
       >
-       
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* Glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        <Palette className="w-4 h-4 text-gray-400 group-hover:text-gray-300 transition-colors" />
+        <div className="relative flex items-center gap-3">
+          <Palette className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
+          <span className="text-gray-300 group-hover:text-white transition-colors font-medium">
+            {currentTheme?.label}
+          </span>
+        </div>
 
-        <span className="text-gray-300 min-w-[80px] text-left group-hover:text-white transition-colors">
-          {currentTheme?.label}
-        </span>
- 
-
-        <div
-          className="relative w-4 h-4 rounded-full border border-gray-600 group-hover:border-gray-500 transition-colors"
-          style={{ background: currentTheme?.color }}
-        />
+        <div className="ml-auto flex items-center gap-2">
+          <div
+            className="relative w-4 h-4 rounded-full border-2 border-gray-500 group-hover:border-gray-400 transition-colors shadow-inner"
+            style={{ background: currentTheme?.color }}
+          />
+          <ChevronDown
+            className={`w-4 h-4 text-gray-400 transition-all duration-300 group-hover:text-gray-300 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          />
+        </div>
       </motion.button>
 
       <AnimatePresence>
@@ -69,67 +76,83 @@ function ThemeSelector() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 mt-2 w-full min-w-[240px] bg-[#1e1e2e]/95 
-            backdrop-blur-xl rounded-xl border border-[#313244] shadow-2xl py-2 z-50"
+            className="absolute top-full left-0 mt-2 w-full min-w-[280px] glass rounded-2xl shadow-2xl py-3 z-50 border border-white/20"
           >
-            <div className="px-2 pb-2 mb-2 border-b border-gray-800/50">
-              <p className="text-xs font-medium text-gray-400 px-2">Select Theme</p>
+            <div className="px-4 pb-3 mb-3 border-b border-white/10">
+              <p className="text-sm font-semibold text-gray-300">Select Theme</p>
+              <p className="text-xs text-gray-500 mt-1">Choose your preferred editor theme</p>
             </div>
 
-            {THEMES.map((t, index) => (
-              <motion.button
-                key={t.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className={`
-                relative group w-full flex items-center gap-3 px-3 py-2.5 hover:bg-[#262637] transition-all duration-200
-                ${theme === t.id ? "bg-blue-500/10 text-blue-400" : "text-gray-300"}
-              `}
-                onClick={() => setTheme(t.id)}
-              >
-                
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 
-              group-hover:opacity-100 transition-opacity"
-                />
-
-              
-                <div
+            <div className="max-h-[300px] overflow-y-auto px-2">
+              {THEMES.map((t, index) => (
+                <motion.button
+                  key={t.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
                   className={`
-                flex items-center justify-center size-8 rounded-lg
-                ${theme === t.id ? "bg-blue-500/10 text-blue-400" : "bg-gray-800/50 text-gray-400"}
-                group-hover:scale-110 transition-all duration-200
-              `}
+                    relative group w-full flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200 mb-1
+                    ${theme === t.id 
+                      ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" 
+                      : "text-gray-300 hover:bg-white/10"
+                    }
+                  `}
+                  onClick={() => {
+                    setTheme(t.id);
+                    setIsOpen(false);
+                  }}
                 >
-                  {THEME_ICONS[t.id] || <CircleOff className="w-4 h-4" />}
-                </div>
-                {/* label */}
-                <span className="flex-1 text-left group-hover:text-white transition-colors">
-                  {t.label}
-                </span>
+                  {/* Selection indicator */}
+                  {theme === t.id && (
+                    <motion.div
+                      layoutId="selectedTheme"
+                      className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
 
-                 
-                <div
-                  className="relative size-4 rounded-full border border-gray-600 
-                group-hover:border-gray-500 transition-colors"
-                  style={{ background: t.color }}
-                />
+                  <div className="relative flex items-center gap-4 w-full">
+                    {/* Theme icon */}
+                    <div
+                      className={`
+                        flex items-center justify-center size-10 rounded-xl transition-all duration-200
+                        ${theme === t.id 
+                          ? "bg-indigo-500/20 text-indigo-400" 
+                          : "bg-gray-800/50 text-gray-400 group-hover:bg-gray-700/50"
+                        }
+                      `}
+                    >
+                      {THEME_ICONS[t.id] || <CircleOff className="w-4 h-4" />}
+                    </div>
 
-                
-              {theme === t.id && (
-                  <motion.div
-                    className="absolute inset-0 border-2 border-blue-500/30 rounded-lg"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-              </motion.button>
-            ))}
+                    {/* Theme info */}
+                    <div className="flex-1 text-left">
+                      <span className="block font-medium group-hover:text-white transition-colors">
+                        {t.label}
+                      </span>
+                      <span className="block text-xs text-gray-500 mt-0.5">
+                        {t.id === 'vs-dark' && 'Dark theme with blue accents'}
+                        {t.id === 'vs-light' && 'Light theme for bright environments'}
+                        {t.id === 'github-dark' && 'GitHub inspired dark theme'}
+                        {t.id === 'monokai' && 'Popular dark theme with vibrant colors'}
+                        {t.id === 'solarized-dark' && 'Easy on the eyes dark theme'}
+                      </span>
+                    </div>
+
+                    {/* Theme color preview */}
+                    <div
+                      className="relative size-6 rounded-lg border-2 border-gray-600 group-hover:border-gray-500 transition-colors shadow-inner"
+                      style={{ background: t.color }}
+                    />
+                  </div>
+                </motion.button>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-      </div>
-  )
+    </div>
+  );
 }
 
-export default ThemeSelector
+export default ThemeSelector;

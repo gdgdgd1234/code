@@ -5,15 +5,15 @@ import React, { useEffect } from 'react'
 import { LANGUAGE_CONFIG } from '../_constants';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { ChevronDownIcon, Lock, Sparkles } from "lucide-react";
+import { ChevronDownIcon, Lock, Sparkles, Code } from "lucide-react";
 
-
-function LanguageSelector({hasAccess}: {hasAccess: boolean}) {
+function LanguageSelector({ hasAccess }: { hasAccess: boolean }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
-  const {language, setLanguage}= useCodeEditorStore();
+  const { language, setLanguage } = useCodeEditorStore();
   const dropdownRef = React.useRef<HTMLDivElement>(null);
-  const currentLanguageObj=LANGUAGE_CONFIG[language];
+  const currentLanguageObj = LANGUAGE_CONFIG[language];
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -25,15 +25,16 @@ function LanguageSelector({hasAccess}: {hasAccess: boolean}) {
   }, []);
 
   const handleLanguageSelect = (langId: string) => {
-    if(!hasAccess && langId !=='javascript')  return;
+    if (!hasAccess && langId !== 'javascript') return;
     setLanguage(langId);
     setIsOpen(false);
   };
+
   useEffect(() => {
     setMounted(true);
   }, []);
-  if (!mounted) return null;
 
+  if (!mounted) return null;
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -41,35 +42,35 @@ function LanguageSelector({hasAccess}: {hasAccess: boolean}) {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`group relative flex items-center gap-3 px-4 py-2.5 bg-[#1e1e2e]/80 
-      rounded-lg transition-all 
-       duration-200 border border-gray-800/50 hover:border-gray-700
-       ${!hasAccess && language !== "javascript" ? "opacity-50 cursor-not-allowed" : ""}`}
+        className={`group relative flex items-center gap-3 px-4 py-2.5 glass-dark hover:bg-white/10 rounded-xl transition-all duration-300 min-w-[160px] ${
+          !hasAccess && language !== "javascript" ? "opacity-50 cursor-not-allowed" : ""
+        }`}
       >
-       
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/5 
-        rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-          aria-hidden="true"
-        />
+        {/* Glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-cyan-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        <div className="size-6 rounded-md bg-gray-800/50 p-0.5 group-hover:scale-110 transition-transform">
-          <Image
-            src={currentLanguageObj.logoPath}
-            alt="programming language logo"
-            width={24}
-            height={24}
-            className="w-full h-full object-contain relative z-10"
-          />
+        <div className="relative flex items-center gap-3">
+          <div className="relative">
+            <div className="size-8 rounded-lg bg-gray-800/50 p-1 group-hover:scale-110 transition-transform duration-300">
+              <Image
+                src={currentLanguageObj.logoPath}
+                alt="programming language logo"
+                width={24}
+                height={24}
+                className="w-full h-full object-contain relative z-10"
+              />
+            </div>
+          </div>
+
+          <span className="text-gray-300 group-hover:text-white transition-colors font-medium">
+            {currentLanguageObj.label}
+          </span>
         </div>
 
-        <span className="text-gray-200 min-w-[80px] text-left group-hover:text-white transition-colors">
-          {currentLanguageObj.label}
-        </span>
-
         <ChevronDownIcon
-          className={`size-4 text-gray-400 transition-all duration-300 group-hover:text-gray-300
-            ${isOpen ? "rotate-180" : ""}`}
+          className={`size-4 text-gray-400 transition-all duration-300 group-hover:text-gray-300 ml-auto ${
+            isOpen ? "rotate-180" : ""
+          }`}
         />
       </motion.button>
 
@@ -80,97 +81,122 @@ function LanguageSelector({hasAccess}: {hasAccess: boolean}) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 mt-2 w-64 bg-[#1e1e2e]/95 backdrop-blur-xl
-           rounded-xl border border-[#313244] shadow-2xl py-2 z-50"
+            className="absolute top-full left-0 mt-2 w-80 glass rounded-2xl shadow-2xl py-3 z-50 border border-white/20"
           >
-            <div className="px-3 pb-2 mb-2 border-b border-gray-800/50">
-              <p className="text-xs font-medium text-gray-400">Select Language</p>
+            <div className="px-4 pb-3 mb-3 border-b border-white/10">
+              <div className="flex items-center gap-2 mb-2">
+                <Code className="w-4 h-4 text-purple-400" />
+                <p className="text-sm font-semibold text-gray-300">Select Language</p>
+              </div>
+              <p className="text-xs text-gray-500">Choose your programming language</p>
             </div>
 
-            <div className="max-h-[280px] overflow-y-auto overflow-x-hidden">
+            <div className="max-h-[320px] overflow-y-auto px-2">
               {Object.values(LANGUAGE_CONFIG).map((lang, index) => {
                 const isLocked = !hasAccess && lang.id !== "javascript";
 
                 return (
                   <motion.div
                     key={lang.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="relative group px-2"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    className="relative group mb-1"
                   >
                     <button
                       className={`
-                      relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
-                      ${language === lang.id ? "bg-blue-500/10 text-blue-400" : "text-gray-300"}
-                      ${isLocked ? "opacity-50" : "hover:bg-[#262637]"}
-                    `}
+                        relative w-full flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200
+                        ${language === lang.id 
+                          ? "bg-purple-500/20 text-purple-300 border border-purple-500/30" 
+                          : isLocked 
+                            ? "opacity-50 cursor-not-allowed" 
+                            : "text-gray-300 hover:bg-white/10"
+                        }
+                      `}
                       onClick={() => handleLanguageSelect(lang.id)}
                       disabled={isLocked}
                     >
-                      
-                      <div
-                        className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-lg 
-                      opacity-0 group-hover:opacity-100 transition-opacity"
-                      />
-
-
-
-<div
-                        className={`
-                         relative size-8 rounded-lg p-1.5 group-hover:scale-110 transition-transform
-                         ${language === lang.id ? "bg-blue-500/10" : "bg-gray-800/50"}
-                       `}
-                      >
-                        <div
-                          className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-lg 
-                        opacity-0 group-hover:opacity-100 transition-opacity"
-                        />
-                        <Image
-                          width={24}
-                          height={24}
-                          src={lang.logoPath}
-                          alt={`${lang.label} logo`}
-                          className="w-full h-full object-contain relative z-10"
-                        />
-                      </div>
-
-                      <span className="flex-1 text-left group-hover:text-white transition-colors">
-                        {lang.label}
-                      </span>
-
-                       
+                      {/* Selection indicator */}
                       {language === lang.id && (
                         <motion.div
-                          className="absolute inset-0 border-2 border-blue-500/30 rounded-lg"
-                          transition={{
-                            type: "spring",
-                            bounce: 0.2,
-                            duration: 0.6,
-                          }}
+                          layoutId="selectedLanguage"
+                          className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-cyan-500/10 rounded-xl"
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                         />
                       )}
 
-                      
+                      <div className="relative flex items-center gap-4 w-full">
+                        {/* Language icon */}
+                        <div
+                          className={`
+                            relative size-10 rounded-xl p-2 transition-all duration-200
+                            ${language === lang.id 
+                              ? "bg-purple-500/20" 
+                              : "bg-gray-800/50 group-hover:bg-gray-700/50"
+                            }
+                          `}
+                        >
+                          <Image
+                            width={24}
+                            height={24}
+                            src={lang.logoPath}
+                            alt={`${lang.label} logo`}
+                            className="w-full h-full object-contain relative z-10"
+                          />
+                        </div>
 
-{isLocked ? (
-                        <Lock className="w-4 h-4 text-gray-500" />
-                      ) : (
-                        language === lang.id && (
-                          <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
-                        )
-                      )}
+                        {/* Language info */}
+                        <div className="flex-1 text-left">
+                          <span className="block font-medium group-hover:text-white transition-colors">
+                            {lang.label}
+                          </span>
+                          <span className="block text-xs text-gray-500 mt-0.5">
+                            {lang.id === 'javascript' && 'Dynamic programming language'}
+                            {lang.id === 'typescript' && 'JavaScript with static typing'}
+                            {lang.id === 'python' && 'High-level programming language'}
+                            {lang.id === 'java' && 'Object-oriented programming'}
+                            {lang.id === 'cpp' && 'Systems programming language'}
+                            {lang.id === 'go' && 'Fast and simple language'}
+                            {lang.id === 'rust' && 'Memory-safe systems language'}
+                            {lang.id === 'csharp' && 'Microsoft .NET language'}
+                            {lang.id === 'ruby' && 'Dynamic object-oriented language'}
+                            {lang.id === 'swift' && 'Apple platform development'}
+                          </span>
+                        </div>
+
+                        {/* Status indicator */}
+                        <div className="flex items-center">
+                          {isLocked ? (
+                            <div className="flex items-center gap-2 px-2 py-1 bg-amber-500/20 rounded-lg">
+                              <Lock className="w-3 h-3 text-amber-400" />
+                              <span className="text-xs text-amber-400 font-medium">Pro</span>
+                            </div>
+                          ) : language === lang.id ? (
+                            <div className="flex items-center gap-1">
+                              <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
                     </button>
                   </motion.div>
                 );
               })}
             </div>
+
+            {!hasAccess && (
+              <div className="px-4 pt-3 mt-3 border-t border-white/10">
+                <div className="flex items-center gap-2 text-amber-400 text-xs">
+                  <Lock className="w-3 h-3" />
+                  <span>Upgrade to Pro to unlock all languages</span>
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-    
   );
 }
 
-export default LanguageSelector
+export default LanguageSelector;

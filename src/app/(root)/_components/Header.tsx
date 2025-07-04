@@ -11,12 +11,27 @@ import ThemeSelector from "./ThemeSelector";
 import LanguageSelector from "./LanguageSelector";
 
 async function Header() {
-  const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-  const user = await currentUser();
+  // Check if Convex URL is available
+  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+  
+  let convexUser = null;
+  let user = null;
 
-  const convexUser = await convex.query(api.users.getUser, {
-    userId: user?.id || "",
-  });
+  try {
+    if (convexUrl) {
+      const convex = new ConvexHttpClient(convexUrl);
+      user = await currentUser();
+
+      if (user?.id) {
+        convexUser = await convex.query(api.users.getUser, {
+          userId: user.id,
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    // Continue rendering without user data
+  }
 
   return (
     <div className="relative z-10">
